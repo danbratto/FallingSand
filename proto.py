@@ -62,6 +62,12 @@ def update_grid(grid, another_grid, row, col, box_size):
                 else:
                     another_grid[i + 1][j - 1] = 1
                     another_grid[i][j] = 0
+            elif j < 39 and j > 0 and i < 39 and grid[i][j] == 1 and grid[i + 1][j + 1] == 0:
+                another_grid[i + 1][j + 1] = 1
+                another_grid[i][j] = 0
+            elif j < 39 and j > 0 and i < 39 and grid[i][j] == 1 and grid[i + 1][j - 1] == 0:
+                another_grid[i + 1][j - 1] = 1
+                another_grid[i][j] = 0
             grid[i][j] = another_grid[i][j]
             
 
@@ -69,6 +75,7 @@ def update_grid(grid, another_grid, row, col, box_size):
 
 canvas.bind('<B1-Motion>', lambda mouse: place_box(mouse, grid, box_size))
 canvas.bind('<Button-1>', lambda mouse: place_box(mouse, grid, box_size))
+canvas.bind('<ButtonRelease-1>', lambda mouse: print('Rleased'))
 
 # Start the sycle
 update_grid(grid, another_grid, row, col, box_size)
