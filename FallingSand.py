@@ -1,8 +1,8 @@
 import tkinter as tk
 from random import randint
 
-ROW = 100
-COL = 100
+ROW = 150
+COL = 150
 assert ROW == COL
 LIST_LENGTH = ROW * COL
 SIZE = 5
