@@ -1,17 +1,20 @@
 import tkinter as tk
 from random import randint
 
-ROW = 80
-COL = 80
+ROW = 100
+COL = 100
 assert ROW == COL
 LIST_LENGTH = ROW * COL
-SIZE = 10
+SIZE = 5
 WINDOW_SIZE = '%dx%d' % (COL * SIZE + 5, ROW * SIZE + 5)
-PLACEMENT_SIZE = 3
+PLACEMENT_SIZE = 5
 
 # Each cell: (state, box_id)
 cells = [(0, None) for _ in range(LIST_LENGTH)]
 future_cells = [(0, None) for _ in range(LIST_LENGTH)]
+
+placing = False
+placing_job = None
 
 def place_box(e):
     x = int(e.x / SIZE) - PLACEMENT_SIZE // 2
@@ -83,13 +86,37 @@ def update_states():
         else:
             cells[i] = (next_state, next_id)
 
-    canvas.after(15, update_states)
+    canvas.after(5, update_states)
 
 def move_cell(src, dst):
     # Move state and box_id from src to dst in future_cells
     state, box_id = cells[src]
     future_cells[src] = (0, None)
     future_cells[dst] = (1, box_id)
+
+def start_placing(event):
+    global placing, placing_job
+    placing = True
+    place_box(event)
+    placing_job = canvas.after(20, lambda: continuous_place(event))
+
+def continuous_place(event):
+    global placing, placing_job
+    if placing:
+        place_box(event)
+        placing_job = canvas.after(20, lambda: continuous_place(event))
+
+# Stop placing when mouse move and button is released
+def stop_placing(event):
+    global placing, placing_job
+    placing = False
+    if placing_job is not None:
+        canvas.after_cancel(placing_job)
+        placing_job = None
+
+def motion_place(event):
+    stop_placing(event)
+    place_box(event)
 
 if __name__ == '__main__':
     window = tk.Tk()
@@ -103,8 +130,9 @@ if __name__ == '__main__':
         background='black'
     )
 
-    canvas.bind('<Button-1>', place_box)
-    canvas.bind('<B1-Motion>', place_box)
+    canvas.bind('<ButtonPress-1>', start_placing)
+    canvas.bind('<B1-Motion>', motion_place)
+    canvas.bind('<ButtonRelease-1>', stop_placing)
     canvas.pack(anchor='center', expand=True)
     update_states()
 
